@@ -1,0 +1,195 @@
+# 项目通用规范
+
+每一次对话都需要严格执行`问题思考`的内容.
+
+## memories
+1. 针对每一轮对话，都需要进行归类和评分
+2. 每一轮对话之前，都需要对历史memories的数据进行评估:
+    1. 当分数 < 80%的memories则认定为Don't Need
+    2. 当分数 >= 80%的memories则认定为Need join Thinking
+
+## 技术栈
+- Python版本: 3.9
+- 后端框架: FaskApi
+- 爬虫框架: Playwright异步框架
+- 数据库表结构风格：ORM表结构
+
+## 代码风格
+- 保持代码简洁、可读
+- 命名格式遵循 Python官方规范
+- 变量遵循 有意义且易读
+- 注释格式遵循 谷歌Docs写法
+- 函数、方法、逻辑计算等需要添加详细注释
+- 包的导入, 需要写在文件的开头, 方便统一管理
+    ```Python
+    <正确例子>
+    import request
+
+    async def xxx
+    </正确例子>
+    <错误例子>
+    async def xxx
+    import request
+
+    </错误例子>
+    ```
+
+## 项目结构
+- 保持项目结构整洁, 遵循模块化原则
+- 遵循类方法开发原则
+
+## 通用开发原则
+- 避免重复或者是功能类似的代码，公共代码需要通用化
+- 优先使用现有库、现有类、现有代码，避免重新开发
+
+## SQL
+- 中文列名,全部都需要添加反引号
+- 当用户需要将原有代码输出sql语句的情况下, 只需要提供sql语句, 其余遵守`问题思考`准则
+- 当用户要求你写一段sql的时候, 只需要提供sql语句, 其余遵守其他准则
+- 数值类型统一保留2位小数点
+- `table.字段名` 必须强制遵守 `as 字段名`
+
+## 问题思考
+
+- 每一次对话都需要总结Topic并存放到 @cursor_thinking.md 中, 具体操作遵守以下规则
+- 每一次对话都需要保存记忆, 具体逻辑遵守以下规则
+
+### Cursor—Thinking
+- 存储位置: @cursor_thinking.md
+- 记录内容：
+    1. 对话轮次
+    2. 问题总结
+    3. 解决方案总结
+- 文件格式：
+    1. 包含Topic管理区域，链路区域和对话区域
+    2. 支持结构化管理
+```Markdown
+<正确例子>
+# Topic: `xxxxx` ->这里是总结Topic主题
+# Topic内容:
+    `总结内容`
+# Topic对话次数: 第1轮
+# 链路文件：
+-> 这里是需要按照调用的顺序进行排序
+1. xxxx.py - `总结xxxx的文件内容`
+2. xxx1.py - `总结xxx1的文件内容`
+3. xxx2.py - `总结xxx2的文件内容`
+...
+# 技术栈：
+- pandas
+- request
+...
+# 解决方案：
+`这里是解决方案`
+# Topic对话次数: 第2轮
+# 链路文件：
+-> 这里是需要按照调用的顺序进行排序
+1. xxxx.py - `总结xxxx的文件内容`
+2. xxx1.py - `总结xxx1的文件内容`
+3. xxx2.py - `总结xxx2的文件内容`
+...
+# 技术栈：
+- pandas
+- request
+...
+# 解决方案：
+`这里是解决方案`
+....
+</正确例子>
+```
+
+### Topic评估与管理机制
+- Topic生成：基于文件路径，问题总结，技术栈生成唯一的Topic
+- 匹配算法：语义匹配当前Topic和`Cursor—Thinking`中的Topic，并设置相似度阈值
+- 覆盖策略：
+    1. 相似度阈值低于 90% 的情况下，清空记忆文件中的数据
+    2. 相似度阈值高于 90% 的情况下，读取记忆文件中的数据
+
+### 细化问题思考流程
+1. Topic识别与评估：
+    1. 确定问题归属
+    2. 生成历史记忆对当前问题的影响等级，并依照 [A，B，C，D] 四个等级进行划分
+        - 其中，A代表影响较大，D代表影响最小，其余按照从A->D的逻辑进行划分
+    3. 读取 @cursor_thinking.md 中的Topic内容, 并依照 [A，B，C，D] 四个等级进行划分
+        - 其中，A代表影响较大，D代表影响最小，其余按照从A->D的逻辑进行划分
+2. 问题解构与分析：
+    1. 定位问题文件路径，定位问题方法名和行数位置
+    2. 对问题拆分为多个子需求，依据主次之分对子需求进行优先级排序，重要的排到最前面
+    3. 引入Topic识别与评估对子需求的影响，对子需求进行优化
+    4. 顺序化生成处理子需求的方案
+3. 代码现状分析：
+    1. 通过 定位问题文件路径，定位问题方法名和行数位置 理解当前代码内容
+    2. 获取最新的代码内容，默认执行以下命令
+        - 需要强制调用MCP服务中的`Context7`服务.
+            ```
+            <正确的例子>
+            用户: 这是cursor的测试对话
+            你: 这是cursor的测试对话
+            Thinking....
+            [Topic分析 start]
+            [Topic分析 end]
+            [问题解构与分析 start]
+            [问题解构与分析 end]
+            [Use Mcp is Context7 start]
+            Called Mcp tool resolve-library-id
+            Called Mcp tool get-library-docs
+            ...
+            [Use Mcp is Context7 end]
+            你：你好
+            </正确的例子>
+            <错误的例子>
+            用户: 这是cursor的测试对话
+            Thinking....
+            [Topic分析 start]
+            [Topic分析 end]
+            [问题解构与分析 start]
+            [问题解构与分析 end]
+            你：你好
+            </错误的例子>
+            ```
+    3. 结合最新代码，分析当前代码内容和当前逻辑设计
+4. 解决方案设计：
+    1. 避免重复代码问题，避免额外扩展代码需求
+    2. 精简代码逻辑，一切以解决问题为主
+    3. 获取最新代码库注释以及内容数据
+    4. 顺序化思考,并制定详细的实现代码方案
+    ```Markdown
+    <正确例子>
+    [目的]
+    [解决的问题定位位置]
+    [解决方案]
+    </正确例子>
+    ```
+5. 方案评估：
+    1. 总结解决方案的逻辑和主要代码
+6. 记录与链路
+    1. 用户确认之后，记录当前对话内容到 `Cursor—Thinking`中
+    2. 在记忆文件中，建立链路追踪
+    ```Markdown
+    <正确例子>
+    # 相似度低于90%
+    `Cursor—Thinking`中已有的Topic A与当前的Topic B
+    你: 相似度低于90%
+    你：覆盖`Cursor—Thinking`整个文件，使Topic A变成Topic B
+    `Cursor—Thinking`中为Topic B内容
+    # 相似度大于90%
+    `Cursor—Thinking`中已有的Topic A与当前的Topic B
+    你: 相似度大于90%
+    你：读取`Cursor—Thinking`整个文件，使Topic B变成Topic A的第n轮对话内容
+    `Cursor—Thinking`中为Topic A+B的总结内容
+    </正确例子>
+    <错误例子>
+    # 相似度低于90%
+    `Cursor—Thinking`中已有的Topic A与当前的Topic B
+    你: 相似度低于90%
+    你：读取`Cursor—Thinking`整个文件，使Topic B变成Topic A的第n轮对话内容
+    `Cursor—Thinking`中为Topic A+B内容
+    # 相似度大于90%
+    `Cursor—Thinking`中已有的Topic A与当前的Topic B
+    你: 相似度大于90%
+    你：覆盖`Cursor—Thinking`整个文件，使Topic A变成Topic B
+    `Cursor—Thinking`中为Topic B内容
+    </错误例子>
+    ```
+
+
