@@ -5,7 +5,7 @@ This is a collection of some AI agent rules that I have debugged and optimized p
 1. Mcp Server needs to use context7 and server-sequential-thinking
 2. User rules need use
 ```
-use chinese and don't hold black. Give it your all.
+use <user language> and don't hold black. Give it your all.
 Strictly follow my user rules and project rules.
 ```
 4. In Cursor Rules, I actually use a combination of problem memory and project memory provided by Cursor version 1.0.
@@ -17,3 +17,5 @@ Strictly follow my user rules and project rules.
   
   update Log
    - New development process requires the conversion of code logic into SQL logic
+---
+The en versions are all translated by Google
