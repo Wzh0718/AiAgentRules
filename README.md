@@ -3,7 +3,12 @@ This is a collection of some AI agent rules that I have debugged and optimized p
 ## [Cursor Rules](https://github.com/Wzh0718/AiAgentRules/tree/main/cursor_rules)
 ### Notes
 1. Mcp Server needs to use context7 and server-sequential-thinking
-2. In Cursor Rules, I actually use a combination of problem memory and project memory provided by Cursor version 1.0.
+2. User rules need use
+```
+use chinese and don't hold black. Give it your all.
+Strictly follow my user rules and project rules.
+```
+4. In Cursor Rules, I actually use a combination of problem memory and project memory provided by Cursor version 1.0.
   - Use sequential splitting to evaluate whether memory is needed based on scores, which can constrain the thinking of the AI ​​model and solve the problem based on the latest doc
   - Standardize the link problem in the problem memory to solve the problem of excessive modification and repeated modification in the cursor process of large projects
   - In daily simple questions, AI actively calls Mcp server to summarize and think about the problem, which can reduce the model's own hallucination problem to a greater extent.
