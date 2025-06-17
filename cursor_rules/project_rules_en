@@ -1,0 +1,195 @@
+# General project specifications
+
+Every conversation needs to strictly follow the content of "question thinking".
+
+## memories
+1. Each round of dialogue needs to be classified and scored
+2. Before each round of dialogue, the data of historical memories needs to be evaluated:
+1. Memories with a score < 80% are considered Don't Need
+2. Memories with a score >= 80% are considered to need join thinking
+
+## Technology Stack
+- Python version: 3.9
+- Backend framework: FaskApi
+- Crawler framework: Playwright asynchronous framework
+- Database table structure style: ORM table structure
+
+## Coding style
+- Keep the code concise and readable
+- The naming format follows the official Python specification
+- Variables follow meaningful and readable
+- The comment format follows the Google Docs format
+- Functions, methods, logical calculations, etc. need to add detailed comments
+- The package import needs to be written at the beginning of the file to facilitate unified management
+```Python
+<Correct example>
+import request
+
+async def xxx
+</正确例子>
+<Error example>
+async def xxx
+import request
+
+</错误例子>
+```
+
+## Project Structure
+- Keep the project structure clean and follow the modular principle
+- Follow the class method development principles
+
+## General Development Principles
+- Avoid duplication or code with similar functions. Common code needs to be generalized.
+- Give priority to using existing libraries, existing classes, and existing code to avoid redevelopment
+
+## SQL
+- Chinese column names, all need to be enclosed in backticks
+- When the user needs to output the original code as a SQL statement, only the SQL statement needs to be provided, and the rest should follow the "problem thinking" principle
+- When the user asks you to write a SQL statement, you only need to provide the SQL statement and follow other guidelines
+- Numeric types are uniformly reserved for 2 decimal places
+- `table.fieldname` must enforce `as fieldname`
+
+## Questions to consider
+
+- Every conversation needs to summarize the topic and store it in @cursor_thinking.md. The specific operation follows the following rules
+- Every conversation needs to be saved, and the specific logic follows the following rules
+
+### Cursor—Thinking
+- Storage location: @cursor_thinking.md
+- Record content:
+1. Dialogue Turns
+2. Problem Summary
+3. Solution Summary
+- File Format:
+1. Contains Topic management area, link area and conversation area
+2. Support structured management
+```Markdown
+<Correct example>
+# Topic: `xxxxx` -> Here is the summary of the Topic
+# Topic content:
+`Conclusion`
+# Topic conversation number: 1st round
+# Link file:
+-> Here you need to sort in the order of calling
+1. xxxx.py - `Summarize the file contents of xxxx`
+2. xxx1.py - `Summarize the file contents of xxx1`
+3. xxx2.py - `Summarize the file contents of xxx2`
+...
+# Technology Stack:
+- pandas
+- request
+...
+# Solution:
+`Here is the solution`
+# Topic conversation number: Round 2
+# Link file:
+-> Here you need to sort in the order of calling
+1. xxxx.py - `Summarize the file contents of xxxx`
+2. xxx1.py - `Summarize the file contents of xxx1`
+3. xxx2.py - `Summarize the file contents of xxx2`
+...
+# Technology Stack:
+- pandas
+- request
+...
+# Solution:
+`Here is the solution`
+....
+</正确例子>
+```
+
+### Topic evaluation and management mechanism
+- Topic generation: Generate a unique Topic based on the file path, problem summary, and technology stack
+- Matching algorithm: semantically match the current Topic with the Topic in `Cursor—Thinking` and set the similarity threshold
+- Coverage strategy:
+1. When the similarity threshold is lower than 90%, clear the data in the memory file
+2. When the similarity threshold is higher than 90%, read the data in the memory file
+
+### Refine the problem thinking process
+1. Topic identification and evaluation:
+1. Determine the problem
+2. Generate the impact level of historical memory on the current problem and divide it into four levels [A, B, C, D]
+- Among them, A represents the largest impact, D represents the smallest impact, and the rest are divided according to the logic from A->D
+3. Read the Topic content in @cursor_thinking.md and divide it into four levels [A, B, C, D]
+- Among them, A represents the largest impact, D represents the smallest impact, and the rest are divided according to the logic from A->D
+2. Problem deconstruction and analysis:
+1. Locate the problem file path, method name and line number
+2. Split the problem into multiple sub-requirements, and prioritize the sub-requirements according to their importance, with the most important ones at the front.
+3. Introduce Topic Identification and Evaluation to Optimize Sub-demands
+4. Sequential generation of solutions to handle sub-requirements
+3. Analysis of the current status of the code:
+1. Understand the current code content by locating the problem file path, method name and line number
+2. Get the latest code content and execute the following command by default
+- It is necessary to force the call of `Context7` service in MCP service.
+```
+<Correct example>
+User: This is a test dialogue for cursor
+You: This is the cursor test dialogue
+Thinking....
+[Topic analysis start]
+[Topic analysis end]
+[Problem deconstruction and analysis start]
+[Problem deconstruction and analysis end]
+[Use Mcp is Context7 start]
+Called Mcp tool resolve-library-id
+Called Mcp tool get-library-docs
+...
+[Use Mcp is Context7 end]
+You: Hello
+</正确的例子>
+<Wrong example>
+User: This is a test dialogue for cursor
+Thinking....
+[Topic analysis start]
+[Topic analysis end]
+[Problem deconstruction and analysis start]
+[Problem deconstruction and analysis end]
+You: Hello
+</错误的例子>
+```
+3. Combine the latest code to analyze the current code content and current logic design
+4. Solution Design:
+1. Avoid duplication of code and avoid the need for additional extended code
+2. Streamline code logic and focus on problem solving
+3. Get the latest codebase comments and content data
+4. Think sequentially and develop detailed implementation code plans
+```Markdown
+<Correct example>
+[Purpose]
+[Solved problem location]
+[Solution]
+</正确例子>
+```
+5. Program evaluation:
+1. Summarize the logic and main code of the solution
+6. Records and links
+1. After the user confirms, record the current conversation content to `Cursor—Thinking`
+2. Create a link trace in the memory file
+```Markdown
+<Correct example>
+# Similarity is less than 90%
+The existing Topic A and the current Topic B in `Cursor-Thinking`
+You: Similarity less than 90%
+You: Overwrite the entire file of `Cursor-Thinking`, so that Topic A becomes Topic B
+The content of Topic B in `Cursor—Thinking`
+# Similarity greater than 90%
+The existing Topic A and the current Topic B in `Cursor-Thinking`
+You: Similarity greater than 90%
+You: Read the entire file of `Cursor—Thinking` and make Topic B become the content of the nth round of conversation of Topic A.
+The summary of Topic A+B in `Cursor—Thinking`
+</正确例子>
+<Error example>
+# Similarity is less than 90%
+The existing Topic A and the current Topic B in `Cursor-Thinking`
+You: Similarity less than 90%
+You: Read the entire file of `Cursor—Thinking` and make Topic B become the content of the nth round of conversation of Topic A.
+The content of Topic A+B in `Cursor—Thinking`
+# Similarity greater than 90%
+The existing Topic A and the current Topic B in `Cursor-Thinking`
+You: Similarity greater than 90%
+You: Overwrite the entire file of `Cursor-Thinking`, so that Topic A becomes Topic B
+The content of Topic B in `Cursor—Thinking`
+</错误例子>
+```
+
+
